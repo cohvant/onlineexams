@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Exams Portal - Exam Officer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #f5f5f5;
+        }
+
+        /* Header Styles */
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            margin: 0;
+        }
+
+        .header-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            background: #34495e;
+            color: white;
+            padding: 1rem;
+            width: 250px;
+            position: fixed;
+            top: 60px;
+            left: 0;
+            height: calc(100vh - 60px);
+            transition: transform 0.3s ease-in-out, visibility 0.3s ease-in-out;
+            z-index: 999;
+        }
+
+        .sidebar.hidden {
+            transform: translateX(-250px);
+            visibility: hidden;
+            display: none;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .sidebar a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 0.8rem;
+            border-radius: 5px;
+            margin-bottom: 0.5rem;
+            transition: background 0.2s ease-in-out;
+        }
+
+        .sidebar a:hover {
+            background-color: #3498db;
+        }
+
+        .sidebar a i {
+            margin-right: 10px;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex-grow: 1;
+            padding: 2rem;
+            padding-top: 60px;
+            margin-left: 250px;
+            transition: margin-left 0.3s ease-in-out;
+            min-height: calc(100vh - 60px);
+        }
+
+        .main-content-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .main-content-content.hidden {
+            display: none;
+        }
+
+        .initial-message {
+            text-align: center;
+            padding: 5rem 0;
+            color: #666;
+            font-size: 1.5rem;
+        }
+
+        /* Signout Button */
+        .signout-btn {
+            background: #e74c3c;
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            padding: 0.8rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #666;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-top: 0.5rem;
+        }
+
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        button:hover {
+            background: #2980b9;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th, td {
+            padding: 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background: #3498db;
+            color: white;
+        }
+
+        .actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+
+        .user-guide {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-top: 1rem;
+        }
+
+        .user-guide ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .user-guide li {
+            margin-bottom: 0.5rem;
+            padding-left: 1rem;
+            position: relative;
+        }
+
+        .user-guide li::before {
+            content: "\2022";
+            color: #3498db;
+            position: absolute;
+            left: 0;
+        }
+    </style>
+</head>
+
+
+<body>
+
+<div class="header">
+    <div class="header-info">
+        <h1>School Exams Portal</h1>
+        <div id="officerInfo"></div>
+    </div>
+    <button class="menu-toggle" onclick="toggleMenu()">
+        <i class="fas fa-bars"></i> Toggle Menu
+    </button>
+</div>
+
+<aside class="sidebar" id="sidebar">
+    <h2>Exam Officer Panel</h2>
+    <a href="#" id="registerTeacherBtn"><i class="fas fa-chalkboard-teacher"></i> Register Teacher</a>
+    <a href="#" id="viewTeachersBtn"><i class="fas fa-list"></i> View Teachers</a>
+    <a href="#" id="manageLevelsBtn"><i class="fas fa-school"></i> Manage Levels</a>
+    <a href="#" id="manageSubjectsBtn"><i class="fas fa-book"></i> Manage Subjects</a>
+    <a href="#" id="manageClassesBtn"><i class="fas fa-users"></i> Manage Classes</a>
+    <a href="#" id="examRequestsBtn"><i class="fas fa-file-alt"></i> Exam Requests</a>
+    <a href="#" id="setStandardsBtn"><i class="fas fa-certificate"></i> Set Exam Standards</a>
+    <a href="#" id="viewStandardsBtn"><i class="fas fa-eye"></i> View Standards</a>
+    <a href="#" id="viewReportsBtn"><i class="fas fa-chart-bar"></i> View Reports</a>
+    <a href="#" id="userGuideBtn"><i class="fas fa-question-circle"></i> User Guide</a>
+</aside>
+
+<div class="main-content">
+    <!-- Register Teacher Form -->
+    <div id="registerTeacher" class="main-content-content hidden">
+        <h2>Register Teacher</h2>
+        <form id="registerTeacherForm">
+            <div class="form-group">
+                <label for="teacherName">Teacher Name:</label>
+                <input type="text" id="teacherName" required>
+            </div>
+            <div class="form-group">
+                <label for="level">Teaching Level:</label>
+                <select id="level" required></select>
+            </div>
+            <div class="form-group">
+                <label for="subject">Teaching Subject:</label>
+                <select id="subject" required></select>
+            </div>
+            <div class="form-group">
+                <label for="class">Class:</label>
+                <select id="class" required></select>
+            </div>
+            <div class="form-group">
+                <label for="contact">Contact Number:</label>
+                <input type="text" id="contact" required>
+            </div>
+            <div class="form-group">
+                <label for="address">Physical Address:</label>
+                <input type="text" id="address" required>
+            </div>
+            <button type="submit">Register</button>
+        </form>
+    </div>
+
+    <!-- View Teachers -->
+    <div id="viewTeachers" class="main-content-content hidden">
+        <h2>Registered Teachers</h2>
+        <table id="teachersTable">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Level</th>
+                    <th>Subject</th>
+                    <th>Class</th>
+                    <th>Contact</th>
+                    <th>Address</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <!-- Manage Levels -->
+    <div id="manageLevels" class="main-content-content hidden">
+        <h2>Manage Teaching Levels</h2>
+        <div class="form-group">
+            <label for="newLevel">Add New Level:</label>
+            <input type="text" id="newLevel" placeholder="Enter level name">
+            <button onclick="addLevel()">Add</button>
+        </div>
+        <table id="levelsTable">
+            <thead>
+                <tr>
+                    <th>Level</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <!-- Manage Subjects -->
+    <div id="manageSubjects" class="main-content-content hidden">
+        <h2>Manage Teaching Subjects</h2>
+        <div class="form-group">
+            <label for="newSubject">Add New Subject:</label>
+            <input type="text" id="newSubject" placeholder="Enter subject name">
+            <button onclick="addSubject()">Add</button>
+        </div>
+        <table id="subjectsTable">
+            <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <!-- Manage Classes -->
+    <div id="manageClasses" class="main-content-content hidden">
+        <h2>Manage Classes</h2>
+        <div class="form-group">
+            <label for="newClass">Add New Class:</label>
+            <input type="text" id="newClass" placeholder="Enter class name">
+            <button onclick="addClass()">Add</button>
+        </div>
+        <table id="classesTable">
+            <thead>
+                <tr>
+                    <th>Class</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <!-- Exam Requests -->
+    <div id="examRequests" class="main-content-content hidden">
+        <h2>Exam Requests</h2>
+        <table id="requestsTable">
+            <thead>
+                <tr>
+                    <th>Teacher</th>
+                    <th>Subject</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <!-- Set Exam Standards -->
+    <div id="setStandards" class="main-content-content hidden">
+        <h2>Set Exam Standards</h2>
+        <form id="setStandardsForm">
+            <div class="form-group">
+                <label for="subjects">Allowed Subjects:</label>
+                <select id="subjects" multiple required></select>
+            </div>
+            <div class="form-group">
+                <label for="passingGrade">Passing Grade:</label>
+                <input type="number" id="passingGrade" required>
+            </div>
+            <button type="submit">Save Standards</button>
+        </form>
+    </div>
+
+    <!-- View Exam Standards -->
+    <div id="viewStandards" class="main-content-content hidden">
+        <h2>Exam Standards</h2>
+        <table id="standardsTable">
+            <thead>
+                <tr>
+                    <th>Allowed Subjects</th>
+                    <th>Passing Grade</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <!-- View Reports -->
+    <div id="viewReports" class="main-content-content hidden">
+        <h2>System Usage Reports</h2>
+        <canvas id="reportsChart" width="400" height="200"></canvas>
+    </div>
+
+    <!-- User Guide -->
+    <div id="userGuide" class="main-content-content hidden">
+        <h2>User Guide</h2>
+        <div class="user-guide">
+            <ul>
+                <li>Register subjects before setting standards</li>
+                <li>Manage classes/levels before registering teachers</li>
+                <li>Exam standards apply to all teachers</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<button class="signout-btn" onclick="signOut()">Sign Out</button>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const registerTeacherBtn = document.getElementById('registerTeacherBtn');
+    const viewTeachersBtn = document.getElementById('viewTeachersBtn');
+    const manageLevelsBtn = document.getElementById('manageLevelsBtn');
+    const manageSubjectsBtn = document.getElementById('manageSubjectsBtn');
+    const manageClassesBtn = document.getElementById('manageClassesBtn');
+    const examRequestsBtn = document.getElementById('examRequestsBtn');
+    const setStandardsBtn = document.getElementById('setStandardsBtn');
+    const viewStandardsBtn = document.getElementById('viewStandardsBtn');
+    const viewReportsBtn = document.getElementById('viewReportsBtn');
+    const userGuideBtn = document.getElementById('userGuideBtn');
+    const sidebar = document.getElementById('sidebar');
+    const toggleMenuBtn = document.querySelector('.menu-toggle');
+    const signoutBtn = document.querySelector('.signout-btn');
+
+    const registerTeacher = document.getElementById('registerTeacher');
+    const viewTeachers = document.getElementById('viewTeachers');
+    const manageLevels = document.getElementById('manageLevels');
+    const manageSubjects = document.getElementById('manageSubjects');
+    const manageClasses = document.getElementById('manageClasses');
+    const examRequests = document.getElementById('examRequests');
+    const setStandards = document.getElementById('setStandards');
+    const viewStandards = document.getElementById('viewStandards');
+    const viewReports = document.getElementById('viewReports');
+    const userGuide = document.getElementById('userGuide');
+
+    const teachersTableBody = document.querySelector('#teachersTable tbody');
+    const levelsTableBody = document.querySelector('#levelsTable tbody');
+    const subjectsTableBody = document.querySelector('#subjectsTable tbody');
+    const classesTableBody = document.querySelector('#classesTable tbody');
+    const requestsTableBody = document.querySelector('#requestsTable tbody');
+    const standardsTableBody = document.querySelector('#standardsTable tbody');
+    const levelSelect = document.getElementById('level');
+    const subjectSelect = document.getElementById('subject');
+    const classSelect = document.getElementById('class');
+    const standardsSubjectsSelect = document.getElementById('subjects');
+
+    let teachers = JSON.parse(localStorage.getItem('teachers')) || [];
+    let levels = JSON.parse(localStorage.getItem('levels')) || [];
+    let subjects = JSON.parse(localStorage.getItem('subjects')) || [];
+    let classes = JSON.parse(localStorage.getItem('classes')) || [];
+    let requests = JSON.parse(localStorage.getItem('requests')) || [];
+    let standards = JSON.parse(localStorage.getItem('standards')) || [];
+    let isMenuOpen = true;
+    let chartInstance = null;
+
+    // Get officer details from admin system
+    const currentPassword = localStorage.getItem('currentPassword');
+    const officers = JSON.parse(localStorage.getItem('officers')) || [];
+    const officerData = officers.find(officer => officer.password === currentPassword);
+    
+    if (officerData) {
+        document.getElementById('officerInfo').innerHTML = `
+            <span>${officerData.name}</span>
+            <span>(${officerData.institution})</span>
+        `;
+    }
+
+    // Initialize dropdowns
+    function updateDropdowns() {
+        levelSelect.innerHTML = '<option value="">Select Level</option>';
+        subjectSelect.innerHTML = '<option value="">Select Subject</option>';
+        classSelect.innerHTML = '<option value="">Select Class</option>';
+        standardsSubjectsSelect.innerHTML = '<option value="">Select Subjects</option>';
+        
+        levels.forEach(level => {
+            const option = document.createElement('option');
+            option.value = level;
+            option.textContent = level;
+            levelSelect.appendChild(option);
+        });
+
+        subjects.forEach(sub => {
+            const option = document.createElement('option');
+            option.value = sub;
+            option.textContent = sub;
+            subjectSelect.appendChild(option);
+            const stdOption = document.createElement('option');
+            stdOption.value = sub;
+            stdOption.textContent = sub;
+            standardsSubjectsSelect.appendChild(stdOption);
+        });
+
+        classes.forEach(cl => {
+            const option = document.createElement('option');
+            option.value = cl;
+            option.textContent = cl;
+            classSelect.appendChild(option);
+        });
+    }
+
+    // Section management functions
+    function showSection(section) {
+        document.querySelectorAll('.main-content-content').forEach(sec => sec.classList.add('hidden'));
+        section.classList.remove('hidden');
+    }
+
+    // Teacher management
+    function updateTeachersList() {
+        teachersTableBody.innerHTML = '';
+        
+        teachers.forEach((teacher, index) => {
+            const row = document.createElement('tr');
+            
+            row.innerHTML = `
+                <td>${teacher.name}</td>
+                <td>${teacher.level}</td>
+                <td>${teacher.subject}</td>
+                <td>${teacher.class}</td>
+                <td>${teacher.contact}</td>
+                <td>${teacher.address}</td>
+                <td class="actions">
+                    <button class="btn-sm" onclick="editTeacher(${index})">Edit</button>
+                    <button class="btn-sm" onclick="removeTeacher(${index})">Remove</button>
+                </td>`;
+            
+            teachersTableBody.appendChild(row);
+        });
+        
+        localStorage.setItem('teachers', JSON.stringify(teachers));
+    }
+
+    // Level management
+    function updateLevelsList() {
+        levelsTableBody.innerHTML = '';
+        
+        levels.forEach((level, index) => {
+            const row = document.createElement('tr');
+            
+            row.innerHTML = `
+                <td>${level}</td>
+                <td class="actions">
+                    <button class="btn-sm" onclick="editLevel(${index})">Edit</button>
+                    <button class="btn-sm" onclick="removeLevel(${index})">Remove</button>
+                </td>`;
+            
+            levelsTableBody.appendChild(row);
+        });
+        
+        localStorage.setItem('levels', JSON.stringify(levels));
+        updateDropdowns();
+    }
+
+    // Subject management
+    function updateSubjectsList() {
+        subjectsTableBody.innerHTML = '';
+        
+        subjects.forEach((subject, index) => {
+            const row = document.createElement('tr');
+            
+            row.innerHTML = `
+                <td>${subject}</td>
+                <td class="actions">
+                    <button class="btn-sm" onclick="editSubject(${index})">Edit</button>
+                    <button class="btn-sm" onclick="removeSubject(${index})">Remove</button>
+                </td>`;
+            
+            subjectsTableBody.appendChild(row);
+        });
+        
+        localStorage.setItem('subjects', JSON.stringify(subjects));
+        updateDropdowns();
+    }
+
+    // Class management
+    function updateClassesList() {
+        classesTableBody.innerHTML = '';
+        
+        classes.forEach((cl, index) => {
+            const row = document.createElement('tr');
+            
+            row.innerHTML = `
+                <td>${cl}</td>
+                <td class="actions">
+                    <button class="btn-sm" onclick="editClass(${index})">Edit</button>
+                    <button class="btn-sm" onclick="removeClass(${index})">Remove</button>
+                </td>`;
+            
+            classesTableBody.appendChild(row);
+        });
+        
+        localStorage.setItem('classes', JSON.stringify(classes));
+        updateDropdowns();
+    }
+
+    // Standards management
+    function updateStandardsList() {
+        standardsTableBody.innerHTML = '';
+        
+        if (!Array.isArray(standards)) {
+            standards = [];
+        }
+
+        standards.forEach((std, index) => {
+            const row = document.createElement('tr');
+            
+            row.innerHTML = `
+                <td>${std.subjects.join(', ')}</td>
+                <td>${std.passingGrade}</td>
+                <td class="actions">
+                    <button class="btn-sm" onclick="editStandard(${index})">Edit</button>
+                    <button class="btn-sm" onclick="removeStandard(${index})">Remove</button>
+                </td>`;
+            
+            standardsTableBody.appendChild(row);
+        });
+        
+        localStorage.setItem('standards', JSON.stringify(standards));
+    }
+
+    // Requests management
+    function updateRequestsList() {
+        requestsTableBody.innerHTML = '';
+        
+        if (!Array.isArray(requests) || requests.length === 0) {
+            requests.push({
+                teacher: 'Default Teacher',
+                subject: 'Default Subject',
+                status: 'Pending'
+            });
+        }
+
+        requests.forEach((request, index) => {
+            const row = document.createElement('tr');
+            
+            row.innerHTML = `
+                <td>${request.teacher}</td>
+                <td>${request.subject}</td>
+                <td>${request.status}</td>
+                <td class="actions">
+                    <button class="btn-sm" onclick="approveRequest(${index})">Approve</button>
+                    <button class="btn-sm" onclick="rejectRequest(${index})">Reject</button>
+                    <button class="btn-sm" onclick="removeRequest(${index})">Remove</button>
+                </td>`;
+            
+            requestsTableBody.appendChild(row);
+        });
+
+        localStorage.setItem('requests', JSON.stringify(requests));
+    }
+
+    // CRUD operations
+    function removeTeacher(index) {
+        teachers.splice(index, 1);
+        updateTeachersList();
+    }
+
+    function editTeacher(index) {
+        const current = teachers[index];
+        const newName = prompt('Enter new teacher name:', current.name);
+        const newLevel = prompt('Enter new level:', current.level);
+        const newSubject = prompt('Enter new subject:', current.subject);
+        const newClass = prompt('Enter new class:', current.class);
+        const newContact = prompt('Enter new contact:', current.contact);
+        const newAddress = prompt('Enter new address:', current.address);
+        
+        if (newName || newLevel || newSubject || newClass || newContact || newAddress) {
+            teachers[index] = {
+                name: newName || current.name,
+                level: newLevel || current.level,
+                subject: newSubject || current.subject,
+                class: newClass || current.class,
+                contact: newContact || current.contact,
+                address: newAddress || current.address
+            };
+            updateTeachersList();
+        }
+    }
+
+    function addLevel() {
+        const newLevel = document.getElementById('newLevel').value;
+        if (newLevel) {
+            levels.push(newLevel);
+            updateLevelsList();
+            document.getElementById('newLevel').value = '';
+        }
+    }
+
+    function editLevel(index) {
+        const newName = prompt('Enter new level name:', levels[index]);
+        if (newName) {
+            levels[index] = newName;
+            updateLevelsList();
+        }
+    }
+
+    function removeLevel(index) {
+        levels.splice(index, 1);
+        updateLevelsList();
+    }
+
+    function addSubject() {
+        const newSubject = document.getElementById('newSubject').value;
+        if (newSubject) {
+            subjects.push(newSubject);
+            updateSubjectsList();
+            document.getElementById('newSubject').value = '';
+        }
+    }
+
+    function editSubject(index) {
+        const newName = prompt('Enter new subject name:', subjects[index]);
+        if (newName) {
+            subjects[index] = newName;
+            updateSubjectsList();
+        }
+    }
+
+    function removeSubject(index) {
+        subjects.splice(index, 1);
+        updateSubjectsList();
+    }
+
+    function addClass() {
+        const newClass = document.getElementById('newClass').value;
+        if (newClass) {
+            classes.push(newClass);
+            updateClassesList();
+            document.getElementById('newClass').value = '';
+        }
+    }
+
+    function editClass(index) {
+        const newName = prompt('Enter new class name:', classes[index]);
+        if (newName) {
+            classes[index] = newName;
+            updateClassesList();
+        }
+    }
+
+    function removeClass(index) {
+        classes.splice(index, 1);
+        updateClassesList();
+    }
+
+    function addStandard() {
+        const selectedSubjects = Array.from(standardsSubjectsSelect.selectedOptions).map(opt => opt.value);
+        const passingGrade = document.getElementById('passingGrade').value;
+        
+        if (!Array.isArray(standards)) {
+            standards = [];
+        }
+
+        standards.push({
+            subjects: selectedSubjects,
+            passingGrade: passingGrade
+        });
+        updateStandardsList();
+        document.getElementById('passingGrade').value = '';
+    }
+
+    function editStandard(index) {
+        const current = standards[index];
+        const newSubjects = prompt('Enter new subjects (comma separated):', current.subjects.join(', '));
+        const newGrade = prompt('Enter new passing grade:', current.passingGrade);
+        
+        if (newSubjects || newGrade) {
+            standards[index] = {
+                subjects: newSubjects ? newSubjects.split(',').map(s => s.trim()) : current.subjects,
+                passingGrade: newGrade || current.passingGrade
+            };
+            updateStandardsList();
+        }
+    }
+
+    function removeStandard(index) {
+        standards.splice(index, 1);
+        updateStandardsList();
+    }
+
+    function approveRequest(index) {
+        requests[index].status = 'Approved';
+        updateRequestsList();
+    }
+
+    function rejectRequest(index) {
+        requests[index].status = 'Rejected';
+        updateRequestsList();
+    }
+
+    function removeRequest(index) {
+        requests.splice(index, 1);
+        updateRequestsList();
+    }
+
+    function toggleMenu() {
+        sidebar.style.transform = isMenuOpen ? 'translateX(-250px)' : 'translateX(0)';
+        document.querySelector('.main-content').style.marginLeft = isMenuOpen ? '0' : '250px';
+        toggleMenuBtn.innerHTML = isMenuOpen ? '<i class="fas fa-bars"></i> Toggle Menu' : '<i class="fas fa-times"></i> Close Menu';
+        isMenuOpen = !isMenuOpen;
+    }
+
+    function signOut() {
+        localStorage.removeItem('currentPassword');
+        window.location.reload();
+    }
+
+    window.removeTeacher = removeTeacher;
+    window.editTeacher = editTeacher;
+    window.addLevel = addLevel;
+    window.editLevel = editLevel;
+    window.removeLevel = removeLevel;
+    window.addSubject = addSubject;
+    window.editSubject = editSubject;
+    window.removeSubject = removeSubject;
+    window.addClass = addClass;
+    window.editClass = editClass;
+    window.removeClass = removeClass;
+    window.approveRequest = approveRequest;
+    window.rejectRequest = rejectRequest;
+    window.removeRequest = removeRequest;
+    window.toggleMenu = toggleMenu;
+
+    // Event listeners
+    registerTeacherBtn.addEventListener('click', () => showSection(registerTeacher));
+    viewTeachersBtn.addEventListener('click', () => {
+        updateTeachersList();
+        showSection(viewTeachers);
+    });
+    manageLevelsBtn.addEventListener('click', () => {
+        updateLevelsList();
+        showSection(manageLevels);
+    });
+    manageSubjectsBtn.addEventListener('click', () => {
+        updateSubjectsList();
+        showSection(manageSubjects);
+    });
+    manageClassesBtn.addEventListener('click', () => {
+        updateClassesList();
+        showSection(manageClasses);
+    });
+    examRequestsBtn.addEventListener('click', () => {
+        updateRequestsList();
+        showSection(examRequests);
+    });
+    setStandardsBtn.addEventListener('click', () => showSection(setStandards));
+    viewStandardsBtn.addEventListener('click', () => {
+        updateStandardsList();
+        showSection(viewStandards);
+    });
+    viewReportsBtn.addEventListener('click', () => showSection(viewReports));
+    userGuideBtn.addEventListener('click', () => showSection(userGuide));
+
+    // Form handlers
+    document.getElementById('registerTeacherForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('teacherName').value;
+        const level = document.getElementById('level').value;
+        const subject = document.getElementById('subject').value;
+        const classVal = document.getElementById('class').value;
+        const contact = document.getElementById('contact').value;
+        const address = document.getElementById('address').value;
+        
+        if (!name || !level || !subject || !classVal || !contact || !address) {
+            alert('Please fill all fields');
+            return;
+        }
+
+        teachers.push({ 
+            name, 
+            level, 
+            subject, 
+            class: classVal, 
+            contact, 
+            address 
+        });
+        updateTeachersList();
+        document.getElementById('teacherName').value = '';
+        document.getElementById('level').value = '';
+        document.getElementById('subject').value = '';
+        document.getElementById('class').value = '';
+        document.getElementById('contact').value = '';
+        document.getElementById('address').value = '';
+    });
+
+    document.getElementById('setStandardsForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        addStandard();
+    });
+
+    document.getElementById('viewReportsBtn').addEventListener('click', () => {
+        if(chartInstance) chartInstance.destroy();
+        const ctx = document.getElementById('reportsChart').getContext('2d');
+        chartInstance = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Teachers', 'Exam Requests'],
+                datasets: [{
+                    label: 'System Usage',
+                    data: [teachers.length, requests.length],
+                    backgroundColor: [
+                        'rgba(52, 152, 219, 0.2)',
+                        'rgba(46, 204, 113, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(52, 152, 219, 1)',
+                        'rgba(46, 204, 113, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    });
+
+    // Initialize dropdowns on load
+    updateDropdowns();
+});
+</script>
+</html>
+

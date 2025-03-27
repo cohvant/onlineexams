@@ -1,0 +1,179 @@
+  /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.8)), url('../Images/ApplicationBackground.png') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size:0.7rem;
+            height: 100vh;
+            background-attachment: fixed;
+        }
+      
+        .container {
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.8);
+            width: 100%;
+            max-width: 450px;
+            padding: 25px;
+            animation: fadeIn 4s ease;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-bottom: 25px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #34495e;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.2);
+        }
+
+        .form-group button {
+            width: 100%;
+            padding: 12px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .form-group button:hover {
+            background: #2980b9;
+        }
+
+        .links {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 0.9em;
+        }
+
+        .links a {
+            color: #3498db;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .links a:hover {
+            text-decoration: underline;
+        }
+
+        .toggle-password {
+            display: inline-block;
+            margin-left: 10px;
+            color: #3498db;
+            cursor: pointer;
+        }
+
+        #forgot-password-form {
+            display: none;
+            margin-top: 20px;
+            opacity: 0;
+            animation: slideIn 0.5s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                width: 90%;
+                padding: 15px;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            }
+
+            h1 {
+                font-size: 1.5em;
+            }
+        }
+
+        /* Alert Box Styles */
+        .alert-container {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1050;
+        }
+
+        .zoom-in-out {
+            animation: zoomInOut 3s forwards;
+        }
+
+        @keyframes zoomInOut {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            20% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+
+            80% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(0);
+                opacity: 0;
+            }
+        }

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intelligent Exams Portal</title>
+    <link rel="stylesheet" href="Css/default3.css">
+    <link href="Css/default2.css" rel="stylesheet">
+    <link href="Css/default1.css" rel="stylesheet">
+<script>var API_URL = "https://localhost:7129/api/UserLogin/login";localStorage.clear();</script>
+</head>
+
+<body>
+    <div class="container">
+        <h1>School Exams Portal</h1>
+        <form id="loginForm" action="/authenticate" method="POST">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+            </div>
+            <div class="form-group">
+                <button type="submit" id="loginBtn">Login</button>
+            </div>
+            <div class="links">
+                <a href="#" class="toggle-password">Forgot Password?</a>
+                <span style="margin: 0 5px">|</span>
+                <a href="#" onclick="showAlert(`false`, `This functionality is disabled. Your supervisor is responsible for registering your account. Contact them for assistance!`,4); return false;">Register</a>
+                <span style="margin: 0 5px">|</span>
+                <a href="https://wa.me/263778785354?text=Hello, I have a question about the Intelligent Exams Portal.">Contact Us</a>
+            </div>
+        </form>
+
+        <form id="forgot-password-form">
+            <div class="form-group">
+                <label for="forgotEmail">Enter your email to reset password</label>
+                <input type="email" id="forgotEmail" name="email" placeholder="Enter your email" required>
+            </div>
+            <div class="form-group">
+                <button type="submit">Send Reset Link</button>
+            </div>
+            <div class="links">
+                <a href="#" class="toggle-password">Back to Login</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Alert Container -->
+    <div class="alert-container">
+        <div id="alertBox" class="alert alert-info zoom-in-out" role="alert" style="display: none;">
+            Default Alert
+        </div>
+    </div>
+
+
+
+
+
+    <script src="Js/default1.js"></script>
+   <script src="Js/ApplicationJs/application1.js"></script>
+   <script src="js/ApplicationJs/other.js"></script>
+</body>
+
+</html>
